@@ -1,0 +1,13 @@
+.Form {
+    margin: auto;
+    width: 15%;
+    /*text-align-last: right;*/
+}
+
+.Control {
+    padding-top: 16px;
+}
+
+.TextField {
+    width: 100%;
+}
