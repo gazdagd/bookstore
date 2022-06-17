@@ -2,7 +2,6 @@ package com.gazdag.bookstore.rest;
 
 import com.gazdag.bookstore.model.Book;
 import com.gazdag.bookstore.repository.BookRepository;
-import com.gazdag.bookstore.repository.BookRestRepository;
 import com.tngtech.keycloakmock.api.KeycloakMock;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,13 +22,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.SocketUtils;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 
 import static com.tngtech.keycloakmock.api.TokenConfig.aTokenConfig;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class BookRestRepositoryTest {
+public class RestTest {
 
     private static final String USERNAME_1 = "user1";
     private static final String USERNAME_2 = "user2";
@@ -54,6 +54,11 @@ public class BookRestRepositoryTest {
         System.setProperty("keycloak.auth-server-url", "http://localhost:" + port + "/auth");
         mock.start();
     }
+
+//    @AfterAll
+//    public static void tearDown() {
+//        mock.stop();
+//    }
 
     @BeforeEach
     public void init() {
@@ -151,6 +156,37 @@ public class BookRestRepositoryTest {
                 .withHeaders(getHeaders(accessToken))
                 .toObject(collectionModelType);
         assertThat(bookResource.getContent().size(), Matchers.equalTo(2));
+    }
+
+    @Test
+    public void addToWishlist(){
+        givenBooks(getDefaultBookBuilder()
+                .wishedBy(List.of(USERNAME_1))
+                .build());
+        String accessToken = mock.getAccessToken(aTokenConfig().withSubject(USERNAME_2).build());
+        setHeaders(accessToken);
+        testRestTemplate.put("/api/wishlist/OL26331930M", null);
+        assertThat(bookRepository.findById("OL26331930M").get().getWishedBy(), Matchers.hasItem(USERNAME_2));
+    }
+
+    @Test
+    public void removeFromWishlist(){
+        givenBooks(getDefaultBookBuilder()
+                .wishedBy(List.of(USERNAME_1, USERNAME_2))
+                .build());
+        String accessToken = mock.getAccessToken(aTokenConfig().withSubject(USERNAME_1).build());
+        setHeaders(accessToken);
+        testRestTemplate.delete("/api/wishlist/OL26331930M");
+        assertThat(bookRepository.findById("OL26331930M").get().getWishedBy(), Matchers.not(Matchers.hasItem(USERNAME_1)));
+    }
+
+    private void setHeaders(String token) {
+        testRestTemplate.getRestTemplate().setInterceptors(
+                Collections.singletonList((request, body, execution) -> {
+                    request.getHeaders()
+                            .add("Authorization", "Bearer " + token);
+                    return execution.execute(request, body);
+                }));
     }
 
     private static HttpHeaders getHeaders(String token) {

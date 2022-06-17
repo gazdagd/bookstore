@@ -1,15 +1,18 @@
 version: '3.8'
 services:
-  web:
+  keycloak:
+    image: jboss/keycloak:16.1.1
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak:/opt/jboss/keycloak/imports
+#    command:
+#      - "-b 0.0.0.0 -Dkeycloak.import=/opt/jboss/keycloak/imports/realm-export.json"
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/realm-export.json
+  app:
     build: .
     ports:
-      - "5000:5000"
-    volumes:
-      - .:/code
-      - logvolume01:/var/log
-    links:
-      - redis
-  redis:
-    image: redis
-volumes:
-  logvolume01: {}
+      - "8081:8081"

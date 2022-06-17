@@ -17,7 +17,7 @@ import java.util.List;
 @Component
 public class DataLoader implements CommandLineRunner {
 
-    private BookRepository bookRepository;
+    private final BookRepository bookRepository;
 
     public DataLoader(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
@@ -41,6 +41,15 @@ public class DataLoader implements CommandLineRunner {
                 .title("Harry Potter and the Chamber of Secrets")
                 .isbn("9780439064873")
                 .numberOfPages(341)
+                .publisher("Scholastic")
+                .authors(List.of("J. K. Rowling"))
+                .genres(List.of("Adventure", "Fantasy"))
+                .build());
+        bookRepository.save(Book.builder()
+                .olid("OL33890423M")
+                .title("Harry Potter and the Deathly Hallows")
+                .isbn("9780545139700")
+                .numberOfPages(759)
                 .publisher("Scholastic")
                 .authors(List.of("J. K. Rowling"))
                 .genres(List.of("Adventure", "Fantasy"))
