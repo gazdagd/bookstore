@@ -1,9 +1,12 @@
 package com.gazdag.bookstore.rest;
 
+import com.gazdag.bookstore.BookstoreApplication;
 import com.gazdag.bookstore.model.Book;
 import com.gazdag.bookstore.repository.BookRepository;
 import com.tngtech.keycloakmock.api.KeycloakMock;
+import com.tngtech.keycloakmock.api.ServerConfig;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +22,7 @@ import org.springframework.hateoas.server.core.TypeReferences;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.util.SocketUtils;
 
 import java.net.URI;
@@ -27,6 +31,7 @@ import java.util.List;
 
 import static com.tngtech.keycloakmock.api.TokenConfig.aTokenConfig;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class RestTest {
@@ -50,20 +55,20 @@ public class RestTest {
     @BeforeAll
     public static void setUp() {
         int port = SocketUtils.findAvailableTcpPort();
-        mock = new KeycloakMock(port, "bookstore");
+        mock = new KeycloakMock(ServerConfig.aServerConfig().withPort(port).withDefaultRealm("bookstore").build());
         System.setProperty("keycloak.auth-server-url", "http://localhost:" + port + "/auth");
-        mock.start();
     }
-
-//    @AfterAll
-//    public static void tearDown() {
-//        mock.stop();
-//    }
 
     @BeforeEach
     public void init() {
         traverson = new Traverson(URI.create("http://localhost:" + port + "/api/"), MediaTypes.HAL_JSON);
         bookRepository.deleteAll();
+        mock.start();
+    }
+
+    @AfterEach
+    public void reset() {
+        mock.stop();
     }
 
     private void givenBooks(Book... book) {
@@ -91,11 +96,11 @@ public class RestTest {
                 .wishedBy(List.of(USERNAME_1))
                 .build());
 
-        Object wished = traverson
-                .follow(Hop.rel("books"))
-                .toObject("$._embedded.books[0].wished");
+        Object firstBook = traverson
+                .follow(Hop.rel("books").withParameter("projection", "withWished"))
+                .toObject("$._embedded.books[0]");
 
-        assertThat(wished, Matchers.nullValue());
+        assertThat(firstBook, not(hasProperty("wished")));
     }
 
     @Test
@@ -105,12 +110,13 @@ public class RestTest {
                 .build());
         String accessToken = mock.getAccessToken(aTokenConfig().withSubject(USERNAME_2).build());
 
-        Object wished = traverson
-                .follow(Hop.rel("books"))
-                .withHeaders(getHeaders(accessToken))
+        Boolean wished = traverson
+                .follow(Hop.rel("books")
+                        .withParameter("projection", "withWished")
+                        .withHeaders(getHeaders(accessToken)))
                 .toObject("$._embedded.books[0].wished");
 
-        assertThat(wished, Matchers.notNullValue());
+        assertThat(wished, is(false));
     }
 
     @Test
@@ -121,11 +127,12 @@ public class RestTest {
         String accessToken = mock.getAccessToken(aTokenConfig().withSubject(USERNAME_1).build());
 
         Boolean wished = traverson
-                .follow(Hop.rel("books"))
-                .withHeaders(getHeaders(accessToken))
+                .follow(Hop.rel("books")
+                        .withParameter("projection", "withWished")
+                        .withHeaders(getHeaders(accessToken)))
                 .toObject("$._embedded.books[0].wished");
 
-        assertThat(wished, Matchers.equalTo(true));
+        assertThat(wished, is(true));
     }
 
 
@@ -159,7 +166,7 @@ public class RestTest {
     }
 
     @Test
-    public void addToWishlist(){
+    public void addToWishlist() {
         givenBooks(getDefaultBookBuilder()
                 .wishedBy(List.of(USERNAME_1))
                 .build());
@@ -170,14 +177,14 @@ public class RestTest {
     }
 
     @Test
-    public void removeFromWishlist(){
+    public void removeFromWishlist() {
         givenBooks(getDefaultBookBuilder()
                 .wishedBy(List.of(USERNAME_1, USERNAME_2))
                 .build());
         String accessToken = mock.getAccessToken(aTokenConfig().withSubject(USERNAME_1).build());
         setHeaders(accessToken);
         testRestTemplate.delete("/api/wishlist/OL26331930M");
-        assertThat(bookRepository.findById("OL26331930M").get().getWishedBy(), Matchers.not(Matchers.hasItem(USERNAME_1)));
+        assertThat(bookRepository.findById("OL26331930M").get().getWishedBy(), not(Matchers.hasItem(USERNAME_1)));
     }
 
     private void setHeaders(String token) {
@@ -194,5 +201,4 @@ public class RestTest {
         headers.add("Authorization", "Bearer " + token);
         return headers;
     }
-
 }

@@ -1,5 +1,6 @@
 package com.gazdag.bookstore.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.rest.core.config.Projection;
 
@@ -26,5 +27,6 @@ public interface WithWishedProjection {
     List<String> getGenres();
 
     @Value("#{@bookService.isWished(target)}")
+    @JsonInclude(JsonInclude.Include.NON_ABSENT)
     Optional<Boolean> getWished();
 }
