@@ -13,3 +13,11 @@ To run it:
 - docker-compose up -d
 - login to keycloak administration (localhost:8080) console and create a user with credentials
 - open localhost:8081
+
+## Screenshots
+### Book list without authentication
+![Book list without authentication](/book-list-page.png)
+### Admin page
+![Admin page](/admin-page.png)
+### Single book page
+![Single book page](/read-book-page.png)
