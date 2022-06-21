@@ -1,18 +1,29 @@
 version: '3.8'
 services:
   keycloak:
+    container_name: keycloak
     image: jboss/keycloak:16.1.1
     ports:
       - "8080:8080"
     volumes:
       - ./keycloak:/opt/jboss/keycloak/imports
-#    command:
-#      - "-b 0.0.0.0 -Dkeycloak.import=/opt/jboss/keycloak/imports/realm-export.json"
     environment:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: admin
       KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/realm-export.json
+    networks:
+      booknet:
+        aliases:
+          - keycloak.bookstore.net
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "8081:8081"
+    environment:
+      keycloak.auth-server-url: http://keycloak.bookstore.net:8080/auth
+    networks:
+      booknet:
+networks:
+  booknet:
