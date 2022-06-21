@@ -4,7 +4,7 @@ import com.gazdag.bookstore.repository.BookRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class WishlistServiceImpl implements WishlistService{
+public class WishlistServiceImpl implements WishlistService {
 
     private final BookRepository bookRepository;
 

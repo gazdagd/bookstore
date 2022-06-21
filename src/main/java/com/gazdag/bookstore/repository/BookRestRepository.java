@@ -2,6 +2,7 @@ package com.gazdag.bookstore.repository;
 
 import com.gazdag.bookstore.model.Book;
 import com.gazdag.bookstore.model.WithWishedProjection;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RepositoryRestResource(excerptProjection = WithWishedProjection.class)
 @CrossOrigin
+@Primary
 public interface BookRestRepository extends CrudRepository<Book, String> {
 
     @PreAuthorize("hasRole('admin')")
