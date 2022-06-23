@@ -6,11 +6,11 @@ import FavoriteIcon from "@material-ui/icons/Favorite";
 import CardMedia from "@material-ui/core/CardMedia";
 import CardContent from "@material-ui/core/CardContent";
 import Card from "@material-ui/core/Card";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import Zoom from "@material-ui/core/Zoom";
 
-import {useKeycloak} from '@react-keycloak/web';
-import {Link} from "react-router-dom";
+import { useKeycloak } from '@react-keycloak/web';
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles(() => ({
     card: {
@@ -44,24 +44,24 @@ const useStyles = makeStyles(() => ({
     },
 }));
 
-const BookItem = ({book, ...props}) => {
+const BookItem = ({ book, ...props }) => {
     const classes = useStyles();
-    const [keycloak] = useKeycloak();
+    const { keycloak } = useKeycloak();
 
     const getTransitionDelay = (multiplier) => {
         return (multiplier * 100) + 'ms';
     }
 
     const action = () => {
-        if(keycloak.authenticated) {
+        if (keycloak.authenticated) {
             return <IconButton aria-label="add to favorites" onClick={() => props.toggleWished(book.olid)}>
-                {book.wished ? <FavoriteIcon color="primary"/> : <FavoriteOutlinedIcon color="primary"/>}
+                {book.wished ? <FavoriteIcon color="primary" /> : <FavoriteOutlinedIcon color="primary" />}
             </IconButton>
         } else return null;
     }
 
     return (
-        <Zoom in={true} style={{transitionDelay: getTransitionDelay(props.delay)}}>
+        <Zoom in={true} style={{ transitionDelay: getTransitionDelay(props.delay) }}>
 
             <Card className={classes.card}>
                 <CardHeader
@@ -70,7 +70,7 @@ const BookItem = ({book, ...props}) => {
                     }}
                     action={action()}
                     title={book.title}
-                    style={{width: 'auto'}}
+                    style={{ width: 'auto' }}
                 />
                 <div className={classes.grow}></div>
                 <Link to={"/books/" + book.olid}>

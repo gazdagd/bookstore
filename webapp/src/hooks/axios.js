@@ -1,10 +1,10 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-import {useKeycloak} from '@react-keycloak/web';
+import { useKeycloak } from '@react-keycloak/web';
 
 export const useAxios = (baseURL) => {
-    const [keycloak, initialized] = useKeycloak();
+    const { keycloak, initialized } = useKeycloak();
     const [axiosInstance, setAxiosInstance] = useState({});
 
     useEffect(() => {
@@ -15,7 +15,7 @@ export const useAxios = (baseURL) => {
             },
         })
 
-        setAxiosInstance({instance});
+        setAxiosInstance({ instance });
 
         return () => {
             setAxiosInstance({});
