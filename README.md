@@ -1,3 +1,4 @@
+[![gazdagd](https://circleci.com/gh/gazdagd/bookstore.svg?style=svg)](https://app.circleci.com/pipelines/github/gazdagd/bookstore)
 # Bookstore
 This is a personal study project for practicing technical skills. It is not intended to present production ready solution and it is focus on particular things like:
 - Create React application with Material UI
