@@ -1,10 +1,10 @@
 import React from 'react';
-import {Route} from 'react-router-dom';
+import { Route } from 'react-router-dom';
 
-import {useKeycloak} from '@react-keycloak/web';
+import { useKeycloak } from '@react-keycloak/web';
 
-export default function ProtectedRoute({component: Component, role, ...rest}) {
-    const [keycloak] = useKeycloak();
+export default function ProtectedRoute({ component: Component, role, ...rest }) {
+    const { keycloak } = useKeycloak();
 
     return (
         <Route

@@ -1,19 +1,19 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
-import {fade, makeStyles} from '@material-ui/core/styles';
+import { fade, makeStyles } from '@material-ui/core/styles';
 import Toolbar from "@material-ui/core/Toolbar";
 import Button from "@material-ui/core/Button";
 import IconButton from "@material-ui/core/IconButton";
-import {AccountCircle} from "@material-ui/icons";
+import { AccountCircle } from "@material-ui/icons";
 import MenuItem from "@material-ui/core/MenuItem";
 import MuiMenu from '@material-ui/core/Menu';
-import {Link as RouterLink} from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import PrivateButton from "../../ProtectedButton";
-import { useSelector} from "react-redux";
-import {useKeycloak} from "@react-keycloak/web";
+import { useSelector } from "react-redux";
+import { useKeycloak } from "@react-keycloak/web";
 import SearchIcon from '@material-ui/icons/Search';
 import InputBase from "@material-ui/core/InputBase";
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -73,7 +73,7 @@ const Menu = () => {
     const userName = useSelector(state => {
         return state.auth.userName
     });
-    const [keycloak] = useKeycloak();
+    const { keycloak } = useKeycloak();
     const classes = useStyles();
 
     const getSearch = () => {
@@ -105,15 +105,15 @@ const Menu = () => {
     const renderMenu = (
         <MuiMenu
             anchorEl={anchorEl}
-            anchorOrigin={{vertical: 'top', horizontal: 'right'}}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             id="primary-search-account-menu"
             keepMounted
-            transformOrigin={{vertical: 'top', horizontal: 'right'}}
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             open={isMenuOpen}
             onClose={handleMenuClose}
         >
             <MenuItem>Profile ({userName})</MenuItem>
-            <MenuItem onClick={() => keycloak.logout({redirectUri: window.location.origin + '/books'})}>Logout</MenuItem>
+            <MenuItem onClick={() => keycloak.logout({ redirectUri: window.location.origin + '/books' })}>Logout</MenuItem>
         </MuiMenu>
     );
 
@@ -128,7 +128,7 @@ const Menu = () => {
                     onClick={handleMenuOpen}
                     color="inherit"
                 >
-                    <AccountCircle/>
+                    <AccountCircle />
                 </IconButton>
                 {renderMenu}
             </React.Fragment>
@@ -141,12 +141,12 @@ const Menu = () => {
                 <Toolbar>
                     <Button color="inherit" to="/" component={RouterLink} className={classes.menuButton}>Books</Button>
                     <PrivateButton to="/wishlist" component={RouterLink} color="inherit" className={classes.menuButton}
-                                   >Wishlist</PrivateButton>
+                    >Wishlist</PrivateButton>
                     <PrivateButton to="/admin" component={RouterLink} color="inherit" className={classes.menuButton}
-                                   role="admin">Admin</PrivateButton>
+                        role="admin">Admin</PrivateButton>
                     <div className={classes.search}>
                         <div className={classes.searchIcon}>
-                            <SearchIcon/>
+                            <SearchIcon />
                         </div>
                         <InputBase
                             onKeyDown={(event) => {
@@ -167,14 +167,14 @@ const Menu = () => {
                                 root: classes.inputRoot,
                                 input: classes.inputInput,
                             }}
-                            inputProps={{'aria-label': 'search'}}
+                            inputProps={{ 'aria-label': 'search' }}
                             value={searchString}
                             onChange={(event) => {
                                 setSearchString(event.target.value);
                             }}
                         />
                     </div>
-                    <div className={classes.grow}/>
+                    <div className={classes.grow} />
                     {authControl}
                 </Toolbar>
             </AppBar>

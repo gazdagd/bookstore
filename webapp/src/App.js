@@ -1,7 +1,7 @@
 import React from 'react';
-import {Redirect, Route, Switch} from 'react-router-dom';
-import {KeycloakProvider} from '@react-keycloak/web'
-import {unstable_createMuiStrictModeTheme, ThemeProvider} from '@material-ui/core/styles';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { ReactKeycloakProvider } from '@react-keycloak/web'
+import { unstable_createMuiStrictModeTheme, ThemeProvider } from '@material-ui/core/styles';
 import font from './fonts/GoudyBookletter1911-Regular.ttf';
 
 import keycloak from './keycloak'
@@ -14,7 +14,7 @@ import brown from '@material-ui/core/colors/brown';
 import CssBaseline from "@material-ui/core/CssBaseline";
 import BookDetail from "./components/Books/BookDetail";
 import * as actions from './store/actions';
-import {useDispatch} from 'react-redux';
+import { useDispatch } from 'react-redux';
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 const gloudyFont = {
@@ -56,42 +56,42 @@ function App() {
     }
 
     const keycloakProviderInitConfig = {
-        onLoad: 'check-sso',
+        onLoad: 'check-sso'
     }
 
     let routes = (
         <Switch>
-            <Redirect exact from="/" to="/books"/>
-            <Route path={"/books/:olid"} component={BookDetail}/>
-            <Route path="/books" render={(props) => <Books {...props} wished={false}/>}/>
-            <ProtectedRoute path="/wishlist" component={Books} wished={true}/>
-            <ProtectedRoute path="/admin" component={Admin} role="admin"/>
-            <Route render={() => <div><h3>404 - Not found</h3></div>}/>
+            <Redirect exact from="/" to="/books" />
+            <Route path={"/books/:olid"} component={BookDetail} />
+            <Route path="/books" render={(props) => <Books {...props} wished={false} />} />
+            <ProtectedRoute path="/wishlist" component={Books} wished={true} />
+            <ProtectedRoute path="/admin" component={Admin} role="admin" />
+            <Route render={() => <div><h3>404 - Not found</h3></div>} />
         </Switch>
     );
 
     return (
         <ThemeProvider theme={theme}>
-            <CssBaseline/>
-            <KeycloakProvider
-                keycloak={keycloak}
-                initConfig={keycloakProviderInitConfig}
+            <CssBaseline />
+            <ReactKeycloakProvider
+                authClient={keycloak}
+                initOptions={keycloakProviderInitConfig}
                 onEvent={onKeycloakEvent}
                 onTokens={onKeycloakTokens}
                 LoadingComponent={<CircularProgress style={{
                     position: 'fixed',
                     top: '50%',
                     left: '50%'
-                }} color="primary"/>}
+                }} color="primary" />}
             >
                 <React.Fragment>
-                    <Menu/>
+                    <Menu />
                     <Container>
                         {routes}
                     </Container>
 
                 </React.Fragment>
-            </KeycloakProvider>
+            </ReactKeycloakProvider>
         </ThemeProvider>
     )
         ;
